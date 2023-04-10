@@ -4,10 +4,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,12 +14,34 @@ import java.util.Optional;
 public class CalculationController {
     @Autowired
     private CalculationService calculationService;
+    @Autowired
+    private CalculationRepository calculationRepository;
     @GetMapping
     public ResponseEntity<List<Calculation>> getAllCalculations(){
         return new ResponseEntity<List<Calculation>>(calculationService.AllCalculations(), HttpStatus.OK);
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<Optional<Calculation>> singleCalculation(@PathVariable ObjectId id){
-        return new ResponseEntity<Optional<Calculation>>(calculationService.singleCalculation(id),HttpStatus.OK);
+    @PostMapping("/add")
+    public Calculation add(@RequestBody Calculation calculation){
+        calculation.setResults(calculation.getOperand1() + calculation.getOperand2());
+        calculation.setOperator("+");
+        return calculationRepository.save(calculation);
+    }
+    @PostMapping("/subtraction")
+    public Calculation subtraction(@RequestBody Calculation calculation){
+        calculation.setResults(calculation.getOperand1() - calculation.getOperand2());
+        calculation.setOperator("-");
+        return calculationRepository.save(calculation);
+    }
+    @PostMapping("/multiplication")
+    public Calculation multiplication(@RequestBody Calculation calculation){
+        calculation.setResults(calculation.getOperand1() * calculation.getOperand2());
+        calculation.setOperator("*");
+        return calculationRepository.save(calculation);
+    }
+    @PostMapping("/division")
+    public Calculation division(@RequestBody Calculation calculation){
+        calculation.setResults(calculation.getOperand1() / calculation.getOperand2());
+        calculation.setOperator("/");
+        return calculationRepository.save(calculation);
     }
 }

@@ -14,6 +14,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Calculation {
     @Id
     private ObjectId _id;
-    private String calculation;
-    private int results;
+    private double operand1;
+    private double operand2;
+
+    private double results;
+    private String operator;
 }
