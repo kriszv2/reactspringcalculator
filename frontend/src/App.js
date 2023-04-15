@@ -4,35 +4,41 @@ import axios from "axios";
 
 function App() {
   const [res, setRes] = useState();
-  const [firstValue, setFirstValue] = useState();
-  const [secondValue, setSecondValue] = useState();
-  const [operator, setOperator] = useState();
+  const [firstValue, setFirstValue] = useState(``);
+  const [secondValue, setSecondValue] = useState(``);
+  const [operator, setOperator] = useState(``);
   const [calculation, setCalculation] = useState({});
+
+  const operatorUrls = {
+    "*": "/api/calculations/multiplication",
+    "/": "/api/calculations/division",
+    "+": "/api/calculations/add",
+    "-": "/api/calculations/subtraction",
+  };
+
+  const calc = async () => {
+    const url = operatorUrls[operator];
+    const res = await axios.post(`http://localhost:8080${url}`, calculation);
+
+    setRes(res.data.results);
+    setFirstValue(res.data.results);
+    console.log(res.data.results);
+  };
+
   useEffect(() => {
     setCalculation({ operand1: firstValue, operand2: secondValue });
   }, [firstValue, secondValue]);
-
-  useEffect(() => {
-    const calc = async () => {
-      if (operator === "*") {
-        const res = await axios.post(
-          "http://localhost:8080/api/calculations/multiplication",
-          calculation
-        );
-        console.log(res.data);
-      }
-    };
-
-    calc();
-  }, [operator, calculation]);
   console.log(firstValue);
   console.log(secondValue);
-  console.log(operator);
   return (
     <main>
       <div className="calculator-container">
         <div className="result">
-          <p>{res}</p>
+          <p>
+            {res
+              ? res
+              : calculation.operand1 + `${operator}` + calculation.operand2}
+          </p>
         </div>
         <div className="grid-container">
           <button className="numberC" onClick={() => setRes(`0`)}>
@@ -47,7 +53,11 @@ function App() {
           </button>
           <button
             className="number7"
-            onClick={() => (firstValue ? setSecondValue(7) : setFirstValue(7))}
+            onClick={() =>
+              !operator
+                ? setFirstValue(firstValue + "7")
+                : setSecondValue(secondValue + "7")
+            }
           >
             7
           </button>
@@ -105,7 +115,9 @@ function App() {
           >
             3
           </button>
-          <button className="numberEq">=</button>
+          <button onClick={calc} className="numberEq">
+            =
+          </button>
 
           <button
             className="number0"
